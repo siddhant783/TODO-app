@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TODO App</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background: #f4f6f9;
+        display: flex;
+        justify-content: center;
+        padding-top: 40px;
+      }
+
+      .container {
+        background: white;
+        width: 500px;
+        padding: 25px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      h2 {
+        text-align: center;
+        margin-bottom: 20px;
+      }
+
+      form input,
+      form select,
+      form button {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 10px;
+        border-radius: 6px;
+        border: 1px solid #ccc;
+      }
+
+      button {
+        background: #4caf50;
+        color: white;
+        border: none;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .task {
+        background: #f1f1f1;
+        padding: 10px;
+        border-radius: 6px;
+        margin-bottom: 8px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .done {
+        text-decoration: line-through;
+        color: gray;
+      }
+
+      .actions a {
+        margin-left: 6px;
+        text-decoration: none;
+        font-size: 13px;
+      }
+
+      .logout {
+        text-align: right;
+        margin-bottom: 10px;
+      }
+
+      .logout a {
+        color: red;
+        text-decoration: none;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="logout">
+        <a href="{% url 'logout' %}">Logout</a>
+      </div>
+
+      <h2>My TODO List</h2>
+
+      <!-- Add Task Form -->
+      <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="title" placeholder="Task title" required />
+        <input
+          type="text"
+          name="description"
+          placeholder="Task description"
+          required
+        />
+        <input type="date" name="due_date" required />
+
+        <select name="priority">
+          <option value="Low">Low Priority</option>
+          <option value="Medium">Medium Priority</option>
+          <option value="High">High Priority</option>
+        </select>
+
+        <button type="submit">Add Task</button>
+      </form>
+
+      <hr />
+
+      <!-- Task List -->
+      {% for task in tasks %}
+      <div class="task">
+        <div class="{% if task.completed %}done{% endif %}">
+          <strong>{{ task.title }}</strong><br />
+          {{ task.description }} <br />
+          <small
+            >Due: {{ task.due_date }} | Priority: {{ task.priority }}</small
+          >
+        </div>
+
+        <div class="actions">
+          {% if not task.completed %}
+          <a href="{% url 'complete' task.id %}">✔</a>
+          {% endif %}
+          <a href="{% url 'update' task.id %}">✏</a>
+          <a href="{% url 'delete' task.id %}">🗑</a>
+        </div>
+      </div>
+      {% empty %}
+      <p>No tasks yet.</p>
+      {% endfor %}
+    </div>
+  </body>
+</html>
